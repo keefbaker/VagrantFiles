@@ -17,14 +17,17 @@
 
 
 # change vmcount to increase number of clients
-# subnet can be changed if it conflicts with your home one.
+# subnet can be changed if it conflicts with your home one. PLEASE (for the moment) keep it in 10.0.x.x
 vmcount=2
-SUBNET="172.27.10"
+SUBNET="10.0.10"
 #
 
 Vagrant.configure(2) do |config|
   cfEngineMaster = "#{SUBNET}.100"
   config.vm.define "cfserv" do |cfserv|
+    cfserv.vm.provider "virtualbox" do |v|
+        v.name = "CFEngine Server"
+    end
     cfserv.vm.box = "chef/centos-6.5"
     cfserv.vm.network "private_network", ip: "#{cfEngineMaster}"
     cfserv.vm.network :forwarded_port, guest: 80, host: 8082
@@ -36,6 +39,9 @@ Vagrant.configure(2) do |config|
 (1..vmcount.to_i).each do |host|
   hosts = "client#{host}"
   config.vm.define hosts do |cfcl1|
+    cfcl1.vm.provider "virtualbox" do |v|
+        v.name = "CFEngine client${host}"
+    end
     cfcl1.vm.box = "chef/centos-7.0"
     cfcl1.vm.hostname = hosts
     cfcl1.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
