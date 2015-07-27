@@ -1,0 +1,6 @@
+bundle common sequenceMaster
+{
+  vars:
+    "bundleList" slist => { "httpd" };
+    "inputList" slist => { "csr/httpd.cf" };
+}
