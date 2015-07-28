@@ -1,6 +1,8 @@
 bundle common sequenceMaster
 {
   vars:
+# insert additions to the bundlesequence here
     "bundleList" slist => { "httpd" };
+# list input files here (including directory)
     "inputList" slist => { "csr/httpd.cf" };
 }
