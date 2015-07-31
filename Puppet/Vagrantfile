@@ -1,0 +1,46 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Requires the "oscar" plugin
+#  # vagrant install plugin oscar
+
+vmcount=2
+SUBNET="10.0.10"
+#
+
+Vagrant.configure(2) do |config|
+  config.pe_build.download_root      = 'https://s3.amazonaws.com/pe-builds/released'
+  config.pe_build.version            = '3.2.3'
+  config.pe_build.filename           = 'puppet-enterprise-3.2.3-el-6-x86_64.tar.gz'
+  puppetMaster = "#{SUBNET}.100"
+  config.vm.define "pupserv" do |pupserv|
+    pupserv.vm.provider "virtualbox" do |v|
+        v.name = "Puppet Server"
+    end
+    pupserv.vm.box = "chef/centos-6.5"
+    pupserv.vm.network "private_network", ip: "#{puppetMaster}"
+    pupserv.vm.network :forwarded_port, guest: 80, host: 8082
+    pupserv.vm.hostname = "puppet.keef.local"
+    pupserv.vm.provision :pe_bootstrap do |provisioner|
+      provisioner.role = :master
+      provisioner.master = "puppet.keef.local"
+      end
+  end
+(1..vmcount.to_i).each do |host|
+  hosts = "node#{host}.keef.local"
+  config.vm.define hosts do |pupcl1|
+    pupcl1.vm.provider "virtualbox" do |v|
+        v.name = "Puppet client#{host}"
+    end
+    pupcl1.vm.box = "chef/centos-7.0"
+    pupcl1.vm.hostname = hosts
+    pupcl1.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
+    pupcl1.provision "shell", inline: "echo '#{puppetMaster} puppet.keef.local' >> /etc/hosts"
+    pupcl1.vm.provision "cfengine" do |ppt|
+      ppt.role = :agent
+      ppt.master = "puppet.keef.local"
+    end
+  
+  end
+ end
+end
