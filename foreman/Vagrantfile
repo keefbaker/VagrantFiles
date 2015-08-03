@@ -17,8 +17,16 @@ sudo wget -q http://deb.theforeman.org/pubkey.gpg -O- | apt-key add -
 sudo apt-get update && apt-get -y install foreman-installer
 sudo foreman-installer --foreman-admin-password=bogroll
 sudo puppet agent --test
+sudo echo "#{SUBNET}.101 client.myhouse.local client" |sudo tee -a /etc/hosts
 sudo systemctl stop ntp
-
+SCRIPT
+$clienthelper= <<SCRIPT
+sudo echo "#{foremanIP} foreman.myhouse.local foreman" |sudo tee -a /etc/hosts
+sudo yum install -y puppet
+sudo sed -i 's/PUPPET_SERVER.*/PUPPET_SERVER=foreman.myhouse.local/g'
+sudo chkconfig puppet on
+sudo service puppet start
+sudo puppet agent --test
 SCRIPT
 	config.vm.define "foreman_server" do |f|
 		f.vm.provider "virtualbox" do |v|
@@ -31,5 +39,14 @@ SCRIPT
 		f.vm.network :forwarded_port, guest: 443, host: 8083
 		f.vm.network :forwarded_port, guest: 8443, host: 8443
 		f.vm.provision "shell", inline: $foremanInstall
+	end
+	config.vm.define "client" do |c|
+		c.vm.provider "virtualbox" do |v|
+			v.name = "puppet client"
+		end
+		c.vm.box = "chef/centos-6.5"
+		c.vm.hostname = "client.myhouse.local"
+		c.vm.network "private_network", ip: "#{SUBNET}.101"
+		c.vm.provision "shell", inline: $clienthelper
 	end
 end
