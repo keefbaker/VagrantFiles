@@ -1,4 +1,2 @@
-CFE/.vagrant/
-Puppet/.vagrant/
+*/.vagrant/
 Puppet/.pe_build/
-CIFarm/.vagrant/

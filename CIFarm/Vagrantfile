@@ -18,6 +18,7 @@ sudo sh -c 'echo deb http://pkg.jenkins-ci.org/debian binary/ > /etc/apt/sources
 sudo apt-get update -y
 sudo apt-get install jenkins -y
 sudo ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+sudo cat /root/.ssh/id_rsa > /vagrant/sshkey
 systemctl stop jenkins
 systemctl start jenkins
 SCRIPT
@@ -31,7 +32,6 @@ SCRIPT
     j.vm.network :forwarded_port, guest: 8080, host: 8082
     j.vm.hostname = "jenkins.keef.local"
     j.vm.provision "shell", inline: $jenkinsInstall
-    $ssh_pub_key = j.vm.provision "shell", inline: "sudo cat /root/.ssh/id_rsa.pub"
   end
 
 # subversion box
@@ -42,6 +42,7 @@ sudo chmod 777 /svn-repo
 sudo svnadmin create /svn-repo
 sudo svnserve -d
 sudo mkdir /root/.ssh/
+sudo cat /vagrant/sshkey >> /root/.ssh/authorized_keys
 SCRIPT
 
   config.vm.define "subversion_server" do |s|
@@ -53,13 +54,13 @@ SCRIPT
     s.vm.network :forwarded_port, guest: 3690, host: 3690
     s.vm.hostname = "subversion.keef.local"
     s.vm.provision "shell", inline: $subversionInstall
-    s.vm.provision "shell", inline: "sudo echo #{$ssh_pub_key} >> /root/.ssh/authorized_keys"
   end
 
 # generic clients
 $clientInstall= <<SCRIPT
 sudo yum install -y subversion ruby
 sudo mkdir /root/.ssh/
+sudo cat /vagrant/sshkey >> /root/.ssh/authorized_keys
 SCRIPT
 
 (1..vmcount.to_i).each do |host|
@@ -72,7 +73,6 @@ SCRIPT
     cl.vm.hostname = hosts
     cl.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
     cl.vm.provision "shell", inline: $clientInstall
-    cl.vm.provision "shell", inline: "sudo echo #{$ssh_pub_key} >> /root/.ssh/authorized_keys"
   end
 end
 end
