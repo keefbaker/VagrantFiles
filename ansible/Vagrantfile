@@ -4,12 +4,14 @@
 SUBNET="10.0.10"
 #
 vmcount=2
+endaddr=vmcount + 10
 $ansibleServer= <<SCRIPT
 sudo yum install -y epel-release
 sudo yum install -y git ansible
 sudo ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
 sudo cat /root/.ssh/id_rsa.pub > /vagrant/sshk
-echo "#{SUBNET}.[1:#{vmcount}]" > /etc/ansible/hosts
+echo "#{SUBNET}.[11:#{endaddr}]" > /etc/ansible/hosts
+sed -i 's/#host_key_checking = False/host_key_checking = False/g' /etc/ansible/ansible.cfg
 SCRIPT
 
 $clientInstall= <<SCRIPT
