@@ -21,12 +21,11 @@ sudo echo "#{SUBNET}.101 client.myhouse.local client" |sudo tee -a /etc/hosts
 sudo systemctl stop ntp
 SCRIPT
 $clienthelper= <<SCRIPT
-sudo echo "#{foremanIP} foreman.myhouse.local foreman" |sudo tee -a /etc/hosts
+sudo echo "#{foremanIP} foreman.myhouse.local foreman puppet" |sudo tee -a /etc/hosts
+sudo rpm -ivh http://yum.puppetlabs.com/puppetlabs-release-el-6.noarch.rpm
 sudo yum install -y puppet
-sudo sed -i 's/PUPPET_SERVER.*/PUPPET_SERVER=foreman.myhouse.local/g'
 sudo chkconfig puppet on
 sudo service puppet start
-sudo puppet agent --test
 SCRIPT
 	config.vm.define "foreman_server" do |f|
 		f.vm.provider "virtualbox" do |v|
@@ -48,5 +47,13 @@ SCRIPT
 		c.vm.hostname = "client.myhouse.local"
 		c.vm.network "private_network", ip: "#{SUBNET}.101"
 		c.vm.provision "shell", inline: $clienthelper
+	end
+	config.vm.define "blankMachine" do |b|
+		b.vm.provider "virtualbox" do |v|
+			v.name = "blank"
+			v.gui = "true"
+		end
+		b.vm.box = "steigr/pxe"
+		b.vm.network "private_network", type: "dhcp"
 	end
 end

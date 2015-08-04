@@ -7,3 +7,4 @@ Currently:
 CFEngine3
 Jenkins/Subversion CI farm
 Foreman (no clients)
+Ansible

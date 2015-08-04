@@ -1,0 +1,44 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+SUBNET="10.0.10"
+#
+vmcount=2
+$ansibleServer= <<SCRIPT
+sudo yum install -y epel-release
+sudo yum install -y git ansible
+sudo ssh-keygen -b 2048 -t rsa -f /root/.ssh/id_rsa -q -N ""
+sudo cat /root/.ssh/id_rsa.pub > /vagrant/sshk
+echo "#{SUBNET}.[1:#{vmcount}]" > /etc/ansible/hosts
+SCRIPT
+
+$clientInstall= <<SCRIPT
+sudo yum install git
+sudo mkdir /root/.ssh
+sudo cat /vagrant/sshk |tee -a /root/.ssh/authorized_keys
+SCRIPT
+
+Vagrant.configure(2) do |config|
+  ansibleIP = "#{SUBNET}.100"
+ config.vm.define "ansible_server" do |a|
+ 	a.vm.provider "virtualbox" do |v|
+ 		v.name = "Ansible Server"
+ 	end
+ 	a.vm.box = "chef/centos-7.0"
+ 	a.vm.network "private_network", ip: "#{ansibleIP}"
+ 	a.vm.hostname = "ansible"
+ 	a.vm.provision "shell", inline: $ansibleServer
+ end
+ (1..vmcount.to_i).each do |h|
+ 	Hname = "client#{h}"
+ 	config.vm.define Hname do |cl|
+ 		    cl.vm.provider "virtualbox" do |v|
+        v.name = "client#{h}"
+    end
+    cl.vm.box = "chef/centos-7.0"
+    cl.vm.hostname = Hname
+    cl.vm.network "private_network", ip: "#{SUBNET}.#{h + 10}"
+    cl.vm.provision "shell", inline: $clientInstall
+end
+end
+end
