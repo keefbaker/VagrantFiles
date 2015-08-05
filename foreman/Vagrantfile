@@ -54,6 +54,7 @@ SCRIPT
 			v.gui = "true"
 		end
 		b.vm.box = "steigr/pxe"
-		b.vm.network "private_network", type: "dhcp"
+		b.ssh.insert_key = "false" 
+#		b.vm.network "private_network", type: "dhcp", auto_config: false
 	end
 end
