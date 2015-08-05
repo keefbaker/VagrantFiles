@@ -9,7 +9,7 @@ SUBNET="10.0.10"
 #
 
 Vagrant.configure(2) do |config|
-  config.pe_build.download_root      = 'https://s3.amazonaws.com/pe-builds/released'
+  config.pe_build.download_root      = 'https://s3.amazonaws.com/artifacts.chimpy.us/tarballs'
   config.pe_build.version            = '3.2.3'
   config.pe_build.filename           = 'puppet-enterprise-3.2.3-el-6-x86_64.tar.gz'
   puppetMaster = "#{SUBNET}.100"
