@@ -1,0 +1,20 @@
+bundle agent mainPax
+{
+  vars:
+      "packList" slist => { "ruby", "git", "rubygems", "epel-release" };
+  packages:
+
+      "$(packList)"
+
+      policy => "present",
+      version => "latest";
+
+}
+bundle agent serverspec
+{
+  vars:
+	"gems" slist => { "rake", "serverspec" };
+  commands:
+      "/usr/bin/gem install"
+	args => "$(gems)";
+}

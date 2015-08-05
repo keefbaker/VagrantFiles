@@ -2,7 +2,14 @@ bundle common sequenceMaster
 {
   vars:
 # insert additions to the bundlesequence here
-    "bundleList" slist => { "httpd" };
+    "standardBundles" slist => { "mainPax" };
+    "bundleList" slist => { "@(standardBundles)", "@(xbundles)" };
 # list input files here (including directory)
-    "inputList" slist => { "csr/httpd.cf" };
+    "inputList" slist => { "csr/httpd.cf", "csr/ruby.cf", "csr/autofs.cf" };
+    centos_6::
+	"xbundles" slist => { "autofs" };
+    centos_7::
+	"xbundles" slist => { "autofs", "serverspec" };
+    !centos_7.!centos_6::
+        "xbundles" slist => {};
 }

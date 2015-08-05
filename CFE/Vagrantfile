@@ -21,7 +21,10 @@
 vmcount=2
 SUBNET="10.0.10"
 #
-
+$masterFiles= <<SCRIPT
+sudo cp -rf /vagrant/csr-cf/* /var/cfengine/masterfiles
+sudo cp -rf /var/cfengine/masterfiles/* /var/cfengine/inputs/
+SCRIPT
 Vagrant.configure(2) do |config|
   cfEngineMaster = "#{SUBNET}.100"
   config.vm.define "cfserv" do |cfserv|
@@ -35,6 +38,7 @@ Vagrant.configure(2) do |config|
     cfserv.vm.provision "cfengine" do |cf|
       cf.am_policy_hub = true
       end
+    cfserv.vm.provision "shell", inline: $masterFiles
   end
 (1..vmcount.to_i).each do |host|
   hosts = "client#{host}"
