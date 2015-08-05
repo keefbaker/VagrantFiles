@@ -20,6 +20,7 @@ Vagrant.configure(2) do |config|
     pupserv.vm.box = "chef/centos-6.5"
     pupserv.vm.network "private_network", ip: "#{puppetMaster}"
     pupserv.vm.network :forwarded_port, guest: 80, host: 8082
+    pupserv.vm.network :forwarded_port, guest: 443, host: 8083
     pupserv.vm.hostname = "puppet.keef.local"
     pupserv.vm.provision :pe_bootstrap do |provisioner|
       provisioner.role = :master
