@@ -26,9 +26,8 @@ body common control
                           cfe_internal_management,   # See cfe_internal/CFE_cfengine.cf
                           main,
                           @(cfengine_enterprise_hub_ha.management_bundles),
-			"ruby",
-			"rubygems",
-			"httpd",
+	  "sequenceMaster",
+	  @(sequenceMaster.bundleList),
 
       };
 
@@ -54,9 +53,10 @@ body common control
 
                   # autorun system
                   @(services_autorun.inputs),
-
+		  "@(CSRdir.csrfiles)",
                   "services/main.cf",
-		  "custom/httpd.cf",
+#		  "csr/sequenceMaster.cf",
+#		  "@(sequenceMaster.inputList)",
       };
 
       version => "CFEngine Promises.cf 3.7.0";
@@ -76,6 +76,13 @@ body common control
 
       #   goal_categories => { "goals", "targets", "milestones" };
       #   goal_patterns   => { "goal_.*", "target.*","milestone.*" };
+}
+bundle common CSRdir
+{
+  vars:
+    "csrfiles" slist => findfiles("$(sys.masterdir)/csr/*.cf");
+  reports:
+	"@(csrfiles)";
 }
 
 bundle common inventory
@@ -281,27 +288,6 @@ bundle common services_autorun
 
       "DEBUG $(this.bundle): adding input='$(found_inputs)'"
         ifvarclass => isvariable("found_inputs");
-}
-
-bundle agent ruby
-{
-  vars:
-      "packList" slist => { "ruby", "git", "rubygems" };
-  packages:
-
-      "$(packList)"
-
-      policy => "present",
-      version => "latest";
-
-}
-bundle agent rubygems
-{
-  vars:
-	"gems" slist => { "rake", "serverspec" };
-  commands:
-      "/usr/bin/gem install"
-	args => "$(gems)";
 }
 
 

@@ -1,0 +1,7 @@
+bundle agent httpd
+{
+packages:
+  "httpd"
+     policy => "present",
+     version => "latest";
+}

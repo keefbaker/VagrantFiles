@@ -1,20 +1,5 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
-#
-# By kb21 . Rough instructions:
-# 1  install vagrant
-# 2  install virtualbox.
-# 3  make a folder, copy this file into it.
-# 4  at a command prompt type "vagrant up"
-# 5  watch it build
-#
-# If you want to shut the farm down use "vagrant halt"
-# To nuke it all from orbit use "vagrant destroy", you can rebuild it with "vagrant up" again
-
-# Once it's up you can ssh to the server on 127.0.0.1:2222, clients start at port 2200
-# user: vagrant pass: vagrant
-# also all machines share a /vagrant directory. This is the dir on your local machine where you put the Vagrantfile
-
 
 # change vmcount to increase number of clients
 # subnet can be changed if it conflicts with your home one. PLEASE (for the moment) keep it in 10.0.x.x
@@ -22,7 +7,7 @@ vmcount=2
 SUBNET="10.0.10"
 #
 $masterFiles= <<SCRIPT
-sudo cp -rf /vagrant/csr-cf/* /var/cfengine/masterfiles
+sudo cp -rf /vagrant/cf/* /var/cfengine/masterfiles
 sudo cp -rf /var/cfengine/masterfiles/* /var/cfengine/inputs/
 SCRIPT
 Vagrant.configure(2) do |config|

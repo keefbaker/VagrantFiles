@@ -1,0 +1,13 @@
+bundle agent autofs
+{
+packages:
+  "autofs"
+    policy => "present",
+    version => "latest";
+
+services:
+
+  "autofs"
+    service_policy => "start";
+}
+
