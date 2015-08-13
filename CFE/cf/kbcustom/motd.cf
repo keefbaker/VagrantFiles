@@ -1,0 +1,21 @@
+bundle agent motd
+{
+vars: 
+	centos_7::
+	   "file[/etc/motd]" string => "I am a centos 7 box, isn't that nice, my name is $(sys.uqhost) and I'm connected to $(sys.policy_hub)";
+	cfserv::
+           "file[/etc/motd]" string => "I am the policy hub, I am the king of everything I see";
+           "file[/etc/hosts]" string => "127.1.1.1   endoftheworld";
+        centos_6.!cfserv::
+           "file[/etc/motd]" string => "I am a centos 6 box, isn't that weird, I didn't build this, my name is $(sys.uqhost) and I'm connected to $(sys.policy_hub)";
+	!centos_6.!centos_7::
+	   "file[/etc/motd]" string => "I am some form of deviant box, I must be destroyed";
+
+#
+# Here's where it gets passed to the subroutine in subroutines.cf
+#
+
+methods:
+	"checkFile" usebundle => ensureLine("motd.file");
+}
+

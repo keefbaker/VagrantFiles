@@ -1,11 +1,17 @@
 bundle common sequenceMaster
 {
   vars:
-# insert additions to the bundlesequence here
-    "standardBundles" slist => { "mainPax" };
+    "standardBundles" slist => { "mainPax", "motd" };
+
+#
+# This is what builds the main bundle list and is parsed to cfengine
+#
     "bundleList" slist => { "@(standardBundles)", "@(xbundles)" };
-# list input files here (including directory)
-    "inputList" slist => { "csr/httpd.cf", "csr/ruby.cf", "csr/autofs.cf" };
+
+
+#
+# I've split out here extra bundles for different "types" of server. At the moment just by OS
+#
     centos_6::
 	"xbundles" slist => { "autofs" };
     centos_7::

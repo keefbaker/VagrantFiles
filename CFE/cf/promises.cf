@@ -53,10 +53,8 @@ body common control
 
                   # autorun system
                   @(services_autorun.inputs),
-		  "@(CSRdir.csrfiles)",
+		  "@(Customdir.customFiles)",
                   "services/main.cf",
-#		  "csr/sequenceMaster.cf",
-#		  "@(sequenceMaster.inputList)",
       };
 
       version => "CFEngine Promises.cf 3.7.0";
@@ -77,12 +75,12 @@ body common control
       #   goal_categories => { "goals", "targets", "milestones" };
       #   goal_patterns   => { "goal_.*", "target.*","milestone.*" };
 }
-bundle common CSRdir
+bundle common Customdir
 {
   vars:
-    "csrfiles" slist => findfiles("$(sys.masterdir)/csr/*.cf");
+    "customFiles" slist => findfiles("$(sys.masterdir)/kbcustom/*.cf");
   reports:
-	"@(csrfiles)";
+	"@(customFiles)";
 }
 
 bundle common inventory

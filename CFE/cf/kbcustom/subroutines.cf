@@ -1,0 +1,10 @@
+bundle agent ensureLine (fileArray)     
+{
+       vars:
+            "file" slist => getindices("$(fileArray)");
+       files:
+            "$(file)"             
+       		 handle => "$(this.bundle)_file_content",             
+        	 create => "true",
+                 edit_line => append_if_no_line("$($(fileArray)[$(file)])");               
+}

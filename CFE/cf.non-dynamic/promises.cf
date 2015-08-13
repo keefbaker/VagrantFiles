@@ -55,7 +55,7 @@ body common control
                   @(services_autorun.inputs),
 
                   "services/main.cf",
-		  "csr/sequenceMaster.cf",
+		  "kbcustom/sequenceMaster.cf",
 		  "@(sequenceMaster.inputList)",
       };
 
