@@ -1,6 +1,12 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 #
+
+#
+# Once the machines are provisioned and up you will need to run "salt-key -A" on the master
+# to accept all clients
+#
+
 SUBNET="10.0.10"
 #
 vmcount=2
@@ -39,10 +45,10 @@ Vagrant.configure(2) do |config|
  	a.vm.provision "shell", inline: $saltServer
  end
  (1..vmcount.to_i).each do |h|
- 	Hname = "client#{h}"
+ 	Hname = "minion#{h}"
  	config.vm.define Hname do |cl|
  		    cl.vm.provider "virtualbox" do |v|
-        v.name = "client#{h}"
+        v.name = "minion#{h}"
     end
     cl.vm.box = "bento/centos-7.1"
     cl.vm.hostname = Hname

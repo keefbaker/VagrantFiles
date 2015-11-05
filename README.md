@@ -3,8 +3,9 @@ This is a repository for a collection of files for use in Vagrant to create basi
 
 Hopefully I will add to this as I go.
 
-Currently:
-CFEngine3
-Jenkins/Subversion CI farm
-Foreman (no clients)
-Ansible
+## Currently:
+- CFEngine3
+- Jenkins/Subversion CI farm
+- Foreman (no clients)
+- Ansible
+- Salt
