@@ -1,0 +1,72 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# change vmcount to increase number of clients
+# subnet can be changed if it conflicts with your home one. PLEASE (for the moment) keep it in 10.0.x.x
+vmcount=2
+SUBNET="10.0.10"
+#
+$gridMaster= <<SCRIPT
+sudo yum -y install ypserv rpcbind yp-tools nfs-utils nfs-utils-lib
+sudo echo "NISDOMAIN=grid.test" >> /etc/sysconfig/network
+echo "setting up makefile"
+sudo sed -i 's/MERGE_PASSWD=true/MERGE_PASSWD=false/' /var/yp/Makefile
+sudo sed -i 's/MERGE_GROUP=true/MERGE_GROUP=false/' /var/yp/Makefile
+sudo sed -i 's/all:  passwd group hosts rpc services netid protocols mail.*/all: passwd shadow group hosts rpc services netid protocols mail/' /var/yp/Makefile
+echo "setting up securenets and nfs access"
+sudo echo "255.255.255.0 #{SUBNET}.0" > /var/yp/securenets
+sudo echo "#{SUBNET}.100 gridmaster gridmaster.grid.test" >> /etc/hosts
+sudo sed -i 's/127.0.0.1.*/127.0.0.1 localhost/' /etc/hosts
+sudo echo "10.0.2.15 gridmaster gridmaster.grid.test" >> /etc/hosts
+sudo mkdir /grid
+sudo echo "/grid 10.0.10.0/24(rw)" > /etc/exports
+echo "starting services"
+sudo bash -c 'for i in rpcbind ypserv ypxfrd yppasswdd nfs; do sudo service $i restart; sudo chkconfig $i on; done'
+echo "running makefile"
+printf 'gridmaster\n' | sudo /usr/lib64/yp/ypinit -m
+cd /var/yp
+sudo make
+echo "ok, now grid stuff"
+export SGE_ROOT=/grid
+cd /grid/
+sudo gzip -dc /vagrant/*common* |sudo tar xvpf -
+sudo gzip -dc /vagrant/*lx-amd64* |sudo tar xvpf -
+printf "YES" |sudo bash -c 'export SGE_ROOT=/grid ;/grid/util/setfileperm.sh $SGE_ROOT; cd /grid; printf "\ny\ny\n\ny" |./install_qmaster'
+SCRIPT
+
+
+
+
+
+
+Vagrant.configure(2) do |config|
+  gridMasterIP = "#{SUBNET}.100"
+  config.vm.define "gridmaster" do |gridmaster|
+    gridmaster.vm.provider "virtualbox" do |v|
+        v.name = "Grid Master"
+    end
+    gridmaster.vm.box = "chef/centos-6.5"
+    gridmaster.vm.network "private_network", ip: "#{gridMasterIP}"
+    gridmaster.vm.hostname = "gridmaster"
+    gridmaster.vm.provision "shell", inline: $gridMaster
+  end
+
+
+
+
+#(1..vmcount.to_i).each do |host|
+#  hosts = "client#{host}"
+#  config.vm.define hosts do |cfcl1|
+#    cfcl1.vm.provider "virtualbox" do |v|
+#        v.name = "CFEngine client#{host}"
+#    end
+#    cfcl1.vm.box = "chef/centos-7.0"
+#    cfcl1.vm.hostname = hosts
+#    cfcl1.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
+#    cfcl1.vm.provision "cfengine" do |cf|
+#      cf.policy_server_address = "#{cfEngineMaster}"
+#    end
+#  
+#  end
+# end
+end
