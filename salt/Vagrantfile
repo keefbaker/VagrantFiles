@@ -8,6 +8,7 @@
 #
 
 SUBNET="10.0.10"
+saltIP = "#{SUBNET}.100"
 #
 vmcount=2
 endaddr=vmcount + 10
@@ -17,7 +18,7 @@ rpm --import SALTSTACK-GPG-KEY.pub
 rm -f SALTSTACK-GPG-KEY.pub
 echo -e "[saltstack-repo]\nname=SaltStack repo for RHEL/CentOS 7\nbaseurl=https://repo.saltstack.com/yum/rhel7\nenabled=1\ngpgcheck=1\ngpgkey=https://repo.saltstack.com/yum/rhel7/SALTSTACK-GPG-KEY.pub" > /etc/yum.repos.d/saltstack.repo
 yum clean expire-cache
-yum install salt-master
+yum install -y salt-master 
 chkconfig salt-master on
 service salt-master start
 SCRIPT
@@ -27,15 +28,15 @@ wget https://repo.saltstack.com/yum/rhel7/SALTSTACK-GPG-KEY.pub
 rpm --import SALTSTACK-GPG-KEY.pub
 rm -f SALTSTACK-GPG-KEY.pub
 echo -e "[saltstack-repo]\nname=SaltStack repo for RHEL/CentOS 7\nbaseurl=https://repo.saltstack.com/yum/rhel7\nenabled=1\ngpgcheck=1\ngpgkey=https://repo.saltstack.com/yum/rhel7/SALTSTACK-GPG-KEY.pub" > /etc/yum.repos.d/saltstack.repo
+echo "#{saltIP} salt" >> /etc/hosts
 yum clean expire-cache
-yum install salt-minion
+yum install -y salt-minion
 chkconfig salt-minion on
 service salt-minion start
 SCRIPT
 
 Vagrant.configure(2) do |config|
-  saltIP = "#{SUBNET}.100"
- config.vm.define "salt_server" do |a|
+  config.vm.define "salt_server" do |a|
  	a.vm.provider "virtualbox" do |v|
  		v.name = "salt Server"
  	end
@@ -44,15 +45,15 @@ Vagrant.configure(2) do |config|
  	a.vm.hostname = "salt"
  	a.vm.provision "shell", inline: $saltServer
  end
- (1..vmcount.to_i).each do |h|
- 	Hname = "minion#{h}"
- 	config.vm.define Hname do |cl|
- 		    cl.vm.provider "virtualbox" do |v|
-        v.name = "minion#{h}"
+ (1..vmcount.to_i).each do |host|
+ 	Hostname = "minion#{host}"
+ 	config.vm.define Hostname do |cl|
+ 	    cl.vm.provider "virtualbox" do |v|
+    	    v.name = "minion#{host}"
     end
     cl.vm.box = "bento/centos-7.1"
-    cl.vm.hostname = Hname
-    cl.vm.network "private_network", ip: "#{SUBNET}.#{h + 10}"
+    cl.vm.hostname = "minion#{host}"
+    cl.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
     cl.vm.provision "shell", inline: $clientInstall
 end
 end

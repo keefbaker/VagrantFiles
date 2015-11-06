@@ -2,7 +2,9 @@
 # vi: set ft=ruby :
 #
 # Requires the "oscar" plugin
-#  # vagrant install plugin oscar
+#  # vagrant plugin install oscar
+# 
+# Works on linux, there is a windows bug with copying the file after download.
 
 vmcount=2
 SUBNET="10.0.10"
@@ -17,7 +19,7 @@ Vagrant.configure(2) do |config|
     pupserv.vm.provider "virtualbox" do |v|
         v.name = "Puppet Server"
     end
-    pupserv.vm.box = "chef/centos-6.5"
+    pupserv.vm.box = "bento/centos-6.7"
     pupserv.vm.network "private_network", ip: "#{puppetMaster}"
     pupserv.vm.network :forwarded_port, guest: 80, host: 8082
     pupserv.vm.network :forwarded_port, guest: 443, host: 8083
@@ -33,11 +35,11 @@ Vagrant.configure(2) do |config|
     pupcl1.vm.provider "virtualbox" do |v|
         v.name = "Puppet client#{host}"
     end
-    pupcl1.vm.box = "chef/centos-7.0"
-    pupcl1.vm.hostname = hosts
+    pupcl1.vm.box = "bento/centos-7.1"
+    pupcl1.vm.hostname = "node#{host}.keef.local"
     pupcl1.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
     pupcl1.provision "shell", inline: "echo '#{puppetMaster} puppet.keef.local' >> /etc/hosts"
-    pupcl1.vm.provision "cfengine" do |ppt|
+    pupcl1.vm.provision "clientbox" do |ppt|
       ppt.role = :agent
       ppt.master = "puppet.keef.local"
     end

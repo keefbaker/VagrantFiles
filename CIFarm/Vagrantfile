@@ -67,9 +67,9 @@ SCRIPT
   hosts = "node#{host}.keef.local"
   config.vm.define hosts do |cl|
     cl.vm.provider "virtualbox" do |v|
-        v.name = "client#{host}"
+        v.name = "Generic Client#{host}"
     end
-    cl.vm.box = "chef/centos-7.0"
+    cl.vm.box = "bento/centos-7.1"
     cl.vm.hostname = hosts
     cl.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
     cl.vm.provision "shell", inline: $clientInstall

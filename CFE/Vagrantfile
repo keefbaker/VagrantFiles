@@ -16,7 +16,7 @@ Vagrant.configure(2) do |config|
     cfserv.vm.provider "virtualbox" do |v|
         v.name = "CFEngine Server"
     end
-    cfserv.vm.box = "chef/centos-6.5"
+    cfserv.vm.box = "bento/centos-6.7"
     cfserv.vm.network "private_network", ip: "#{cfEngineMaster}"
     cfserv.vm.network :forwarded_port, guest: 80, host: 8082
     cfserv.vm.hostname = "cfserv"
@@ -31,8 +31,8 @@ Vagrant.configure(2) do |config|
     cfcl1.vm.provider "virtualbox" do |v|
         v.name = "CFEngine client#{host}"
     end
-    cfcl1.vm.box = "chef/centos-7.0"
-    cfcl1.vm.hostname = hosts
+    cfcl1.vm.box = "bento/centos-7.1"
+    cfcl1.vm.hostname = "client#{host}"
     cfcl1.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
     cfcl1.vm.provision "cfengine" do |cf|
       cf.policy_server_address = "#{cfEngineMaster}"

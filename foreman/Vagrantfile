@@ -43,18 +43,9 @@ SCRIPT
 		c.vm.provider "virtualbox" do |v|
 			v.name = "puppet client"
 		end
-		c.vm.box = "chef/centos-6.5"
+		c.vm.box = "bento/centos-6.7"
 		c.vm.hostname = "client.myhouse.local"
 		c.vm.network "private_network", ip: "#{SUBNET}.101"
 		c.vm.provision "shell", inline: $clienthelper
-	end
-	config.vm.define "blankMachine" do |b|
-		b.vm.provider "virtualbox" do |v|
-			v.name = "blank"
-			v.gui = "true"
-		end
-		b.vm.box = "steigr/pxe"
-		b.ssh.insert_key = "false" 
-#		b.vm.network "private_network", type: "dhcp", auto_config: false
 	end
 end
