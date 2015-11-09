@@ -9,3 +9,8 @@ Hopefully I will add to this as I go.
 - Foreman (no clients)
 - Ansible
 - Salt
+- Puppet (Does not work on a Windows Host)
+
+## To do:
+- Chef
+- Hadoop cluster
