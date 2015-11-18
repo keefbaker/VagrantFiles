@@ -32,8 +32,7 @@ Vagrant.configure(2) do |config|
  	a.vm.provision "shell", inline: $ansibleServer
  end
  (1..vmcount.to_i).each do |h|
- 	Hname = "client#{h}"
- 	config.vm.define Hname do |cl|
+ 	config.vm.define "client#{h}" do |cl|
  		    cl.vm.provider "virtualbox" do |v|
         v.name = "client#{h}"
     end

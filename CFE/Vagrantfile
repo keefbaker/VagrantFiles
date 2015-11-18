@@ -26,8 +26,7 @@ Vagrant.configure(2) do |config|
     cfserv.vm.provision "shell", inline: $masterFiles
   end
 (1..vmcount.to_i).each do |host|
-  hosts = "client#{host}"
-  config.vm.define hosts do |cfcl1|
+  config.vm.define "client#{host}" do |cfcl1|
     cfcl1.vm.provider "virtualbox" do |v|
         v.name = "CFEngine client#{host}"
     end

@@ -30,8 +30,7 @@ Vagrant.configure(2) do |config|
       end
   end
 (1..vmcount.to_i).each do |host|
-  hosts = "node#{host}.keef.local"
-  config.vm.define hosts do |pupcl1|
+  config.vm.define "node#{host}.keef.local" do |pupcl1|
     pupcl1.vm.provider "virtualbox" do |v|
         v.name = "Puppet client#{host}"
     end

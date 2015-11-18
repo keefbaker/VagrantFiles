@@ -46,8 +46,7 @@ Vagrant.configure(2) do |config|
  	a.vm.provision "shell", inline: $saltServer
  end
  (1..vmcount.to_i).each do |host|
- 	Hostname = "minion#{host}"
- 	config.vm.define Hostname do |cl|
+ 	config.vm.define "minion#{host}" do |cl|
  	    cl.vm.provider "virtualbox" do |v|
     	    v.name = "minion#{host}"
     end

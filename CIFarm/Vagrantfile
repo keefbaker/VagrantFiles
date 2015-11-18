@@ -64,8 +64,7 @@ sudo cat /vagrant/sshkey >> /root/.ssh/authorized_keys
 SCRIPT
 
 (1..vmcount.to_i).each do |host|
-  hosts = "node#{host}.keef.local"
-  config.vm.define hosts do |cl|
+  config.vm.define "node#{host}.keef.local" do |cl|
     cl.vm.provider "virtualbox" do |v|
         v.name = "Generic Client#{host}"
     end
