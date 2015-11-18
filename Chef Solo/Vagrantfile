@@ -1,0 +1,23 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Very basic Chef Solo machine
+#
+# NB: Had to put a basic empty cookbook in place otherwise it will not build
+
+SUBNET="10.0.10"
+#
+
+Vagrant.configure(2) do |config|
+  ip = "#{SUBNET}.100"
+  config.vm.define "serv" do |serv|
+    serv.vm.provider "virtualbox" do |v|
+        v.name = "Chef Solo"
+    end
+    serv.vm.box = "bento/centos-6.7"
+    serv.vm.network "private_network", ip: "#{ip}"
+    serv.vm.hostname = "chefsolo.local"
+    serv.vm.provision "chef_solo" do |chef|
+      end
+  end
+end

@@ -1,0 +1,40 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+
+SUBNET="10.0.10"
+chefIP = "#{SUBNET}.100"
+#
+vmcount=2
+endaddr=vmcount + 10
+$chefServer= <<SCRIPT
+wget https://opscode-omnibus-packages.s3.amazonaws.com/el/7/x86_64/chefdk-0.10.0-1.el7.x86_64.rpm
+yum localinstall -y chefdk-0.10.0-1.el7.x86_64.rpm
+SCRIPT
+
+$clientInstall= <<SCRIPT
+
+SCRIPT
+
+Vagrant.configure(2) do |config|
+  config.vm.define "chef_server" do |a|
+ 	a.vm.provider "virtualbox" do |v|
+ 		v.name = "Chef Server"
+ 	end
+ 	a.vm.box = "bento/centos-7.1"
+ 	a.vm.network "private_network", ip: "#{chefIP}"
+ 	a.vm.hostname = "AinsleyHarriot"
+ 	a.vm.provision "shell", inline: $chefServer
+ end
+# (1..vmcount.to_i).each do |host|
+# 	config.vm.define "minion#{host}" do |cl|
+# 	    cl.vm.provider "virtualbox" do |v|
+#    	    v.name = "minion#{host}"
+#    end
+#    cl.vm.box = "bento/centos-7.1"
+#    cl.vm.hostname = "minion#{host}"
+#    cl.vm.network "private_network", ip: "#{SUBNET}.#{host + 10}"
+#    cl.vm.provision "shell", inline: $clientInstall
+#end
+#end
+end
